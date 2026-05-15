@@ -290,15 +290,17 @@ export default function App() {
                 <button
                   key={name}
                   onClick={() => toggleIcon(name)}
-                  className={`group relative flex flex-col items-center justify-center p-4 gap-3 bg-white rounded-2xl border transition-all cursor-pointer ${
+                  className={`group relative flex flex-col items-center justify-center p-4 gap-3 rounded-2xl border transition-all cursor-pointer ${
                     isSelected 
                       ? 'border-indigo-500 shadow-md bg-indigo-50/50 ring-1 ring-indigo-500' 
-                      : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                      : isLab
+                        ? 'bg-purple-50/30 border-purple-200 hover:border-purple-300 hover:bg-purple-50 hover:shadow-sm'
+                        : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm'
                   }`}
                   title={name}
                 >
                   {isLab && (
-                    <div className="absolute top-2 right-2 text-indigo-400 opacity-50 group-hover:opacity-100 transition-opacity" title="Lucide Lab Icon">
+                    <div className="absolute top-2 right-2 text-purple-400 opacity-60 group-hover:opacity-100 transition-opacity" title="Lucide Lab Icon">
                       <Beaker className="w-3.5 h-3.5" />
                     </div>
                   )}
