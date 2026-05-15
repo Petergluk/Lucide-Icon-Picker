@@ -1,0 +1,6 @@
+{
+  "name": "Lucide Icon Picker",
+  "description": "An app to browse, select, and export icons from the lucide-react library.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
