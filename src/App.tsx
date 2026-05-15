@@ -317,6 +317,12 @@ export default function App() {
           </div>
         )}
       </main>
+
+      <footer className="mt-16 pb-8 text-center text-sm text-gray-500">
+        <p>
+          Icons provided by <a href="https://lucide.dev/icons/" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-800 hover:underline font-medium">Lucide</a> and <a href="https://github.com/lucide-icons/lucide-lab" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-800 hover:underline font-medium">Lucide Lab</a>.
+        </p>
+      </footer>
     </div>
   );
 }
