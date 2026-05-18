@@ -9,16 +9,7 @@ import { CATEGORIES } from './categories';
 const toKebabCase = (str: string) => str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
 
 // Get standard icon names
-const standardIconNames = Object.keys(LucideIcons).filter(
-  name => 
-    name !== 'default' &&
-    name[0] === name[0].toUpperCase() && 
-    name !== 'LucideProps' && 
-    name !== 'IconNode' &&
-    name !== 'Icons' &&
-    !name.endsWith('Icon') &&
-    name !== 'createLucideIcon'
-).sort();
+const standardIconNames = Object.keys((LucideIcons as any).icons).sort();
 
 // Collect lab icons
 // @lucide/lab exports the icon nodes in camelCase. We'll convert to PascalCase.
@@ -50,18 +41,16 @@ export default function App() {
   const [copied, setCopied] = useState(false);
 
   const filteredIcons = useMemo(() => {
-    let result = showLabIcons ? [...standardIconNames, ...labIconNames].sort() : standardIconNames;
+    // Deduplicate the combined list to prevent double icons (e.g., if CardSim is in standard AND lab)
+    let result = showLabIcons ? Array.from(new Set([...standardIconNames, ...labIconNames])).sort() : standardIconNames;
     
     // Apply category filter
-    if (activeCategory !== 'All') {
+    if (activeCategory === 'Lucide Lab') {
+      result = labIconNames; // Only lab icons when "Lucide Lab" category is active
+    } else if (activeCategory !== 'All') {
       const categoryIcons = new Set(CATEGORIES[activeCategory as keyof typeof CATEGORIES] || []);
-      // Lab icons are not historically tagged in lucide.dev categories, 
-      // but if the category is specified we'll just filter what matches the name or the category set.
-      result = result.filter(name => {
-        if (categoryIcons.has(name)) return true;
-        // Basic fallback for lab icons to appear in some categories (optional)
-        return false;
-      });
+      // Filter exactly by category map
+      result = result.filter(name => categoryIcons.has(name));
     }
 
     // Apply search filter
@@ -137,9 +126,9 @@ export default function App() {
     <h1>Selected Icons (${namesArray.length})</h1>
   </div>
   <div class="grid">
-    ${namesArray.map(name => `
+    ${namesArray.map((name: any) => `
     <div class="icon-card">
-      <i data-lucide="${toKebabCase(name)}"></i>
+      <i data-lucide="${toKebabCase(name as string)}"></i>
       <span class="icon-name">${name}</span>
     </div>`).join('\n')}
   </div>
@@ -174,10 +163,10 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [filteredIcons.length]);
 
-  // Reset display count on new search
+  // Reset display count on new search or category change
   useEffect(() => {
     setDisplayCount(150);
-  }, [searchTerm]);
+  }, [searchTerm, activeCategory, showLabIcons]);
 
   const displayedIcons = filteredIcons.slice(0, displayCount);
 
@@ -190,7 +179,7 @@ export default function App() {
           </div>
           <div>
             <h1 className="text-xl font-bold leading-tight">Lucide Picker</h1>
-            <p className="text-xs text-gray-500 font-medium">{showLabIcons ? standardIconNames.length + labIconNames.length : standardIconNames.length} icons available</p>
+            <p className="text-xs text-gray-500 font-medium">{filteredIcons.length} icons available</p>
           </div>
         </div>
         
@@ -202,12 +191,7 @@ export default function App() {
               onChange={(e) => setActiveCategory(e.target.value)}
               className="pl-9 pr-8 py-2.5 bg-transparent text-sm font-medium text-gray-700 outline-none appearance-none cursor-pointer hover:text-indigo-600 transition-colors w-full sm:w-auto"
             >
-              {Object.keys(CATEGORIES)
-                .sort((a, b) => {
-                  if (a === 'All') return -1;
-                  if (b === 'All') return 1;
-                  return a.localeCompare(b);
-                })
+              {['All', 'Lucide Lab', ...Object.keys(CATEGORIES).filter(c => c !== 'All').sort()]
                 .map(category => (
                 <option key={category} value={category}>
                   {category}
